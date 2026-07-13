@@ -1,0 +1,15 @@
+# Cloud profile: uses Vertex AI on GCP (Application Default Credentials).
+# No api-key here; project-id + location switch the client into Vertex mode.
+spring:
+  ai:
+    google:
+      genai:
+        # Chat uses Vertex AI (project-id + location switch the client into Vertex mode).
+        # Embeddings are configured under spring.ai.vertex.ai.embedding in application.yml.
+        project-id: ${GCP_PROJECT_ID}
+        location: ${GCP_CHAT_LOCATION:us}
+  datasource:
+    # On Cloud Run, point this at Cloud SQL (via the Cloud SQL socket factory or connector).
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}

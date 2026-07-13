@@ -1,0 +1,100 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '4.1.0'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.hibernate.orm' version '7.4.1.Final'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+description = 'smart-fin-assistant'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    springAiVersion = '2.0.0'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+    }
+}
+
+dependencies {
+    // Web + persistence
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Spring AI 2.0 - Google GenAI client in Vertex mode for CHAT.
+    implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
+    // Embeddings via Vertex AI: the google-genai starter ships no embedding model in 2.0.0,
+    // so RAG embeddings use Vertex text embeddings (requires GCP project + ADC).
+    implementation 'org.springframework.ai:spring-ai-starter-model-vertex-ai-embedding'
+    implementation 'org.springframework.ai:spring-ai-starter-vector-store-pgvector'
+
+    // Database driver + migrations. The starter carries Spring Boot 4's Flyway
+    // autoconfiguration (the spring-boot-flyway module); flyway-core alone does not
+    // run migrations on startup in Boot 4. flyway-database-postgresql adds PG support.
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.springframework.boot:spring-boot-starter-flyway'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+    implementation 'com.github.jsqlparser:jsqlparser:5.3'
+
+    // Dev conveniences
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation platform('org.testcontainers:testcontainers-bom:2.0.5')
+    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
+    testImplementation 'org.testcontainers:testcontainers-postgresql'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+hibernate {
+    enhancement {
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform {
+        excludeTags 'live-rag-eval'
+    }
+}
+
+tasks.register('ragQualityEval', Test) {
+    group = 'verification'
+    description = 'Runs the live Vertex/pgvector retrieval quality evaluation.'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform {
+        includeTags 'live-rag-eval'
+    }
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
+// Keep the version-controlled business document under docs/, but package that exact
+// source into the executable application so RAG also works outside the repository.
+tasks.named('processResources') {
+    from('docs/response-codes.md') {
+        into 'rag'
+    }
+}

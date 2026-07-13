@@ -1,0 +1,30 @@
+-- V2: seed the 13 response codes verbatim from the assignment appendix (Vietnamese).
+-- Authoritative ground truth for RC meanings; the curated views join against this.
+
+INSERT INTO response_codes (rc, meaning, handling) VALUES
+('00', 'Giao dịch thành công',
+       'Giao dịch đã được ghi nhận và hoàn tất thành công trên hệ thống. Không cần xử lý gì thêm.'),
+('01', 'Yêu cầu xác thực lại',
+       'Ngân hàng phát hành yêu cầu xác thực thêm (OTP/Biometrics). Hướng dẫn khách hàng thực hiện lại giao dịch và nhập đúng mã xác thực.'),
+('05', 'Giao dịch bị từ chối (Doanh nghiệp)',
+       'Hệ thống từ chối giao dịch do tài khoản hoặc thẻ bị khóa tính năng thanh toán trực tuyến. Khách hàng cần liên hệ hotline ngân hàng để mở khóa.'),
+('12', 'Giao dịch không hợp lệ',
+       'Các tham số của giao dịch (Số tiền, loại tiền tệ, thông tin thẻ) gửi lên không đúng định dạng. Đội vận hành cần kiểm tra lại log hệ thống để xem cấu trúc tin điện.'),
+('14', 'Số thẻ/Số tài khoản không tồn tại',
+       'Hệ thống không tìm thấy thông tin thẻ hoặc số tài khoản này trên cơ sở dữ liệu. Nhắc khách hàng kiểm tra và nhập lại chính xác.'),
+('30', 'Lỗi định dạng tin điện (Format Error)',
+       'Tin điện gửi đến không phân tách đúng các trường dữ liệu theo chuẩn kết nối. Yêu cầu đội kỹ thuật kiểm tra lại mã nguồn kết nối API/ISO.'),
+('51', 'Số dư không đủ (Insufficient Funds)',
+       'Tài khoản của khách hàng không đủ tiền để thực hiện giao dịch (hoặc số tiền giao dịch vượt quá số dư khả dụng). Khách hàng cần nạp thêm tiền hoặc kiểm tra lại số dư.'),
+('54', 'Thẻ/Tài khoản hết hạn sử dụng',
+       'Thẻ ATM/Thẻ tín dụng của khách hàng đã quá ngày hết hạn ghi trên thẻ. Hướng dẫn khách hàng đến quầy giao dịch để gia hạn hoặc đổi thẻ mới.'),
+('61', 'Vượt quá hạn mức giao dịch ngày',
+       'Giao dịch thất bại vì số tiền vượt quá hạn mức tối đa trong ngày của thẻ/tài khoản. Khách hàng có thể vào app Mobile Banking để nâng hạn mức hoặc đợi sang ngày hôm sau.'),
+('68', 'Phản hồi chậm từ phía đối tác (Timeout)',
+       'Yêu cầu gửi sang ngân hàng đối tác hoặc tổ chức thẻ (Visa/Mastercard) nhưng quá thời gian chờ (Timeout) mà không có phản hồi. Hệ thống tự động thực hiện luồng Đảo giao dịch (Reversal).'),
+('75', 'Nhập sai PIN quá số lần quy định',
+       'Khách hàng đã nhập sai mã PIN (hoặc mật khẩu) quá 3 lần liên tiếp. Thẻ/Tài khoản đã bị tạm khóa để bảo mật. Khách hàng cần ra quầy hoặc dùng app để mở khóa.'),
+('96', 'Hệ thống mất kết nối (Component Malfunction)',
+       'Một thành phần trong hệ thống (như Module Bảo mật HSM, Core kết nối database) đang không hoạt động. Đội vận hành cần kiểm tra hạ tầng và khởi động lại dịch vụ.'),
+('99', 'Lỗi hệ thống không xác định',
+       'Lỗi ngoại lệ hệ thống chưa được định nghĩa (Internal Server Error). Đội kỹ thuật cần kiểm tra Stack Trace trong log để tìm nguyên nhân cụ thể.');

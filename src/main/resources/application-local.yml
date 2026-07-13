@@ -1,0 +1,9 @@
+# Local profile: uses Vertex AI for both chat and embeddings through ADC.
+spring:
+  ai:
+    google:
+      genai:
+        # project-id + location switch the Google GenAI chat client into Vertex mode.
+        project-id: ${GCP_PROJECT_ID}
+        # Embeddings keep their separate GCP_LOCATION setting in application.yml.
+        location: ${GCP_CHAT_LOCATION:us}

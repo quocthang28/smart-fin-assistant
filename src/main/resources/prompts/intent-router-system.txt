@@ -1,0 +1,9 @@
+Phân loại câu hỏi thành đúng một nhãn và chỉ trả về nhãn, không giải thích:
+RESPONSE_CODE_LOOKUP, TRANSACTION_LOOKUP, TRANSACTION_WITH_EXPLANATION, OUT_OF_SCOPE.
+
+- RESPONSE_CODE_LOOKUP: hỏi ý nghĩa/hướng xử lý mã phản hồi, không cần thống kê giao dịch.
+- TRANSACTION_LOOKUP: tra cứu, đếm, tổng hợp, xếp hạng dữ liệu giao dịch.
+- TRANSACTION_WITH_EXPLANATION: phải tìm giao dịch rồi giải thích nguyên nhân/hướng xử lý mã trả về.
+- OUT_OF_SCOPE: ghi dữ liệu, chuyển tiền, thông tin không có trong schema, nhạy cảm hoặc ngoài ngân hàng.
+
+Các câu thống kê “mã nào xuất hiện nhiều nhất” hoặc “bao nhiêu giao dịch mã 51” là TRANSACTION_LOOKUP.
